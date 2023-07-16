@@ -1,0 +1,76 @@
+/* Styles for the CRUD API Frontend */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    background-color: #cc8570;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  h2 {
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  li {
+    margin-bottom: 10px;
+  }
+  
+  form label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  form input,
+  form textarea {
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 10px;
+  }
+  
+  form button[type="submit"] {
+    background-color: #c20606;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  form button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  
+  /* Additional styling for better visual appearance */
+  
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+  
+  .success-message {
+    color: green;
+    margin-bottom: 10px;
+  }
+  .button-read {
+    background-color: green;
+    color: white;
+  }
+  
+  .button-update {
+    background-color: blue;
+    color: white;
+  }
+  
+  .button-delete {
+    background-color: red;
+    color: white;
+  }

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD APP</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="database.ico" type="image/x-icon">
+</head>
+<body>
+    <h1>REST API (CRUD)</h1>
+
+    <!-- Form for creating a new product -->
+    <h2>Create Product</h2>
+    <form id="create-form">
+        <label for="name">Name:</label>
+        <input type="text" id="name" required>
+        <label for="price">Price:</label>
+        <input type="number" id="price" required>
+        <label for="description">Description:</label>
+        <textarea id="description"></textarea>
+        <label for="rating">Rating:</label>
+        <input type="number" id="rating" min="0" max="5">
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" required>
+        <button type="submit">Create</button>
+    </form>
+
+    <!-- Container to display the list of products -->
+    <h2>Products</h2>
+    <ul id="product-list"></ul>
+
+    <!-- JavaScript code to handle API interactions -->
+    <script>
+        // Function to create a new product
+        function createProduct(event) {
+            event.preventDefault();
+            const nameInput = document.getElementById('name');
+            const priceInput = document.getElementById('price');
+            const descriptionInput = document.getElementById('description');
+            const ratingInput = document.getElementById('rating');
+            const stockInput = document.getElementById('stock');
+
+            // Make a POST request to the API endpoint to create the product
+            fetch('/api/v1/products/new', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: nameInput.value,
+                    price: parseFloat(priceInput.value),
+                    description: descriptionInput.value,
+                    rating: parseInt(ratingInput.value),
+                    stock: parseInt(stockInput.value)
+                })
+            })
+            .then(response => response.json())
+            .then(product => {
+                // Add the newly created product to the list
+                const productList = document.getElementById('product-list');
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${product.name} - Price: $${product.price} <button onclick="readProduct('${product._id}')">Read</button> <button onclick="updateProduct('${product._id}')">Update</button> <button onclick="deleteProduct('${product._id}')">Delete</button>`;
+                productList.appendChild(listItem);
+
+                // Clear the input fields
+                nameInput.value = '';
+                priceInput.value = '';
+                descriptionInput.value = '';
+                ratingInput.value = '';
+                stockInput.value = '';
+
+                fetchProducts();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Add an event listener to the create form
+        const createForm = document.getElementById('create-form');
+        createForm.addEventListener('submit', createProduct);
+
+        // Function to fetch and display the list of products
+        function fetchProducts() {
+            // Make a GET request to the API endpoint to get the products
+            fetch('/api/v1/products')
+            .then(response => response.json())
+            .then(data => {
+                const products = data.products;
+                // Display each product in the list
+                const productList = document.getElementById('product-list');
+                productList.innerHTML = ''; // Clear the existing list
+
+                products.forEach(product => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `${product.name} - Price: $${product.price} <button onclick="readProduct('${product._id}')">Read</button> <button onclick="updateProduct('${product._id}')">Update</button> <button onclick="deleteProduct('${product._id}')">Delete</button>`;
+                    productList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to read a product
+        function readProduct(id) {
+            // Make a GET request to the API endpoint to get the product details
+            fetch(`/api/v1/products/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                // Display the product details
+                alert(`Product Details:\n\nName: ${data.product.name}\nPrice: $${data.product.price}\nDescription: ${data.product.description}\nRating: ${data.product.rating}\nStock: ${data.product.stock}`);
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to update a product
+        function updateProduct(id) {
+            // Prompt the user to enter the updated details for the product
+            const updatedName = prompt('Enter updated name:');
+            const updatedPrice = parseFloat(prompt('Enter updated price:'));
+            const updatedDescription = prompt('Enter updated description:');
+            const updatedRating = parseInt(prompt('Enter updated rating (0-5):'));
+            const updatedStock = parseInt(prompt('Enter updated stock:'));
+
+            // Make a PUT request to the API endpoint to update the product
+            fetch(`/api/v1/products/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name: updatedName,
+                    price: updatedPrice,
+                    description: updatedDescription,
+                    rating: updatedRating,
+                    stock: updatedStock
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Alert the user with the updated product details
+                alert(`Product Updated:\n\nName: ${data.product.name}\nPrice: $${data.product.price}\nDescription: ${data.product.description}\nRating: ${data.product.rating}\nStock: ${data.product.stock}`);
+
+                // Refresh the product list
+                fetchProducts();
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Function to delete a product
+        function deleteProduct(id) {
+            // Confirm with the user before deleting the product
+            const confirmation = confirm('Are you sure you want to delete this product?');
+
+            if (confirmation) {
+                // Make a DELETE request to the API endpoint to delete the product
+                fetch(`/api/v1/products/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Alert the user with the deleted product details
+                    alert(`Product Deleted:\n\nName: ${data.product.name}\nPrice: $${data.product.price}`);
+
+                    // Refresh the product list
+                    fetchProducts();
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Fetch the initial list of products
+        fetchProducts();
+    </script>
+</body>
+</html>
